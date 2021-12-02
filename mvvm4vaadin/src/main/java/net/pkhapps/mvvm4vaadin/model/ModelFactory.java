@@ -1,5 +1,6 @@
 package net.pkhapps.mvvm4vaadin.model;
 
+import com.vaadin.flow.function.SerializableRunnable;
 import com.vaadin.flow.function.SerializableSupplier;
 
 import java.util.Collection;
@@ -63,5 +64,9 @@ public final class ModelFactory {
     @SuppressWarnings("unused")
     public static <T> DefaultVetoableObservableValue<T> vetoableValue(Class<T> type) {
         return vetoableValue();
+    }
+
+    public static DefaultAction action(SerializableRunnable action) {
+        return new DefaultAction(action);
     }
 }

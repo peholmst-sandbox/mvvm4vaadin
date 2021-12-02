@@ -8,10 +8,12 @@ import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.function.SerializableRunnable;
 import com.vaadin.flow.function.SerializableSupplier;
 import com.vaadin.flow.shared.Registration;
+import net.pkhapps.mvvm4vaadin.model.Action;
 import net.pkhapps.mvvm4vaadin.model.ObservableList;
 import net.pkhapps.mvvm4vaadin.model.ObservableValue;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -239,6 +241,32 @@ public final class BindingFactory {
 
     public static <T> void bindMethodOnAttach(ObservableValue<T> model, Component view, SerializableConsumer<T> method) {
         bindOnAttach(view, () -> bindMethod(model, method));
+    }
+
+    public static <V extends ClickNotifier<?> & HasEnabled> Registration bindActionAsDisabledWhenUnavailable(Action action, V view) {
+        requireNonNull(action, "action must not be null");
+        requireNonNull(view, "view must not be null");
+        var registrations = new LinkedList<Registration>();
+        registrations.add(view.addClickListener(event -> action.run()));
+        registrations.add(bindEnabled(action.runnable(), view));
+        return () -> registrations.forEach(Registration::remove);
+    }
+
+    public static <V extends Component & ClickNotifier<?> & HasEnabled> void bindActionOnAttachAsDisabledWhenUnavailable(Action action, V view) {
+        bindOnAttach(action, view, BindingFactory::bindActionAsDisabledWhenUnavailable);
+    }
+
+    public static <V extends Component & ClickNotifier<?>> Registration bindActionAsHiddenWhenUnavailable(Action action, V view) {
+        requireNonNull(action, "action must not be null");
+        requireNonNull(view, "view must not be null");
+        var registrations = new LinkedList<Registration>();
+        registrations.add(view.addClickListener(event -> action.run()));
+        registrations.add(bindVisible(action.runnable(), view));
+        return () -> registrations.forEach(Registration::remove);
+    }
+
+    public static <V extends Component & ClickNotifier<?>> void bindActionOnAttachAsHiddenWhenUnavailable(Action action, V view) {
+        bindOnAttach(action, view, BindingFactory::bindActionAsHiddenWhenUnavailable);
     }
 
     private static <V extends Component, M> void bindOnAttach(M model, V view, SerializableBiFunction<M, V, Registration> bindingMethod) {
