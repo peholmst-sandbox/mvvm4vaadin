@@ -11,6 +11,7 @@ import com.vaadin.flow.shared.Registration;
 import net.pkhapps.mvvm4vaadin.model.Action;
 import net.pkhapps.mvvm4vaadin.model.ObservableList;
 import net.pkhapps.mvvm4vaadin.model.ObservableValue;
+import net.pkhapps.mvvm4vaadin.model.WritableObservableValue;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -145,6 +146,28 @@ public final class BindingFactory {
         bindOnAttach(model, view, BindingFactory::bindFieldValue);
     }
 
+    public static <V extends HasValue<?, T>, T> Registration reverseBindFieldValue(V view, SerializableConsumer<T> model) {
+        requireNonNull(view, "view must not be null");
+        requireNonNull(model, "model must not be null");
+        return view.addValueChangeListener(event -> {
+            if (event.isFromClient()) {
+                model.accept(event.getValue());
+            }
+        });
+    }
+
+    public static <V extends Component & HasValue<?, T>, T> void reverseBindFieldValueOnAttach(V view, SerializableConsumer<T> model) {
+        bindOnAttach(view, () -> reverseBindFieldValue(view, model));
+    }
+
+    public static <V extends HasValue<?, T>, T> Registration reverseBindFieldValue(V view, WritableObservableValue<T> model) {
+        return reverseBindFieldValue(view, model::setValue);
+    }
+
+    public static <V extends Component & HasValue<?, T>, T> void reverseBindFieldValueOnAttach(V view, WritableObservableValue<T> model) {
+        reverseBindFieldValueOnAttach(view, model::setValue);
+    }
+
     public static <V extends HasValue<?, ?>> Registration bindReadOnly(ObservableValue<Boolean> model, V view) {
         requireNonNull(model, "model must not be null");
         requireNonNull(view, "view must not be null");
@@ -260,13 +283,31 @@ public final class BindingFactory {
         requireNonNull(action, "action must not be null");
         requireNonNull(view, "view must not be null");
         var registrations = new LinkedList<Registration>();
-        registrations.add(view.addClickListener(event -> action.run()));
+        registrations.add(view.addClickListener(event -> {
+            if (event.isFromClient()) {
+                action.run();
+            }
+        }));
         registrations.add(bindVisible(action.runnable(), view));
         return () -> registrations.forEach(Registration::remove);
     }
 
     public static <V extends Component & ClickNotifier<?>> void bindActionOnAttachAsHiddenWhenUnavailable(Action action, V view) {
         bindOnAttach(action, view, BindingFactory::bindActionAsHiddenWhenUnavailable);
+    }
+
+    public static <V extends ClickNotifier<?>> Registration bindActionMethod(SerializableRunnable action, V view) {
+        requireNonNull(action, "action must not be null");
+        requireNonNull(view, "view must not be null");
+        return view.addClickListener(event -> {
+            if (event.isFromClient()) {
+                action.run();
+            }
+        });
+    }
+
+    public static <V extends Component & ClickNotifier<?>> void bindActionMethodOnAttach(SerializableRunnable action, V view) {
+        bindOnAttach(action, view, BindingFactory::bindActionMethod);
     }
 
     private static <V extends Component, M> void bindOnAttach(M model, V view, SerializableBiFunction<M, V, Registration> bindingMethod) {
