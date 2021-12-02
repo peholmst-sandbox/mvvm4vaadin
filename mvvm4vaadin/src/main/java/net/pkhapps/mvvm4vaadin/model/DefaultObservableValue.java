@@ -26,7 +26,7 @@ public class DefaultObservableValue<T> extends AbstractObservableValue<T> implem
         }
     }
 
-    private void doSetValue(T value) {
+    protected void doSetValue(T value) {
         if (updatingValue) {
             // Prevent value change listeners from changing the value, which would trigger yet another event and so on
             throw new IllegalStateException("The value is being updated");

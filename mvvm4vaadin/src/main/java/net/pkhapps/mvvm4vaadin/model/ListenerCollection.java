@@ -50,4 +50,8 @@ class ListenerCollection<EVENT> implements Serializable {
         }
         weakListeners.put(listener, null);
     }
+
+    boolean hasListeners() {
+        return (strongListeners != null && strongListeners.size() > 0) || (weakListeners != null && weakListeners.size() > 0);
+    }
 }

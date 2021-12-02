@@ -3,6 +3,7 @@ package net.pkhapps.mvvm4vaadin.model;
 import com.vaadin.flow.function.SerializableFunction;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
 
@@ -33,6 +34,19 @@ public interface ObservableValue<T> extends Observable<ObservableValue.ValueChan
 
         public T getValue() {
             return value;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ValueChangeEvent<?> that = (ValueChangeEvent<?>) o;
+            return sender.equals(that.sender) && Objects.equals(oldValue, that.oldValue) && Objects.equals(value, that.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(sender, oldValue, value);
         }
     }
 }

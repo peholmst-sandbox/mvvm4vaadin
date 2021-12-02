@@ -18,7 +18,7 @@ public final class ModelFactory {
         return new DefaultObservableValue<>(initialValue);
     }
 
-    // To make it possible to use with the var keyword and still get the right type
+    // To make it possible to use with the var keyword, a static import and still get the right type
     @SuppressWarnings("unused")
     public static <T> DefaultObservableValue<T> observableValue(Class<T> type) {
         return observableValue();
@@ -28,7 +28,7 @@ public final class ModelFactory {
         return new DefaultObservableList<>();
     }
 
-    // To make it possible to use with the var keyword and still get the right type
+    // To make it possible to use with the var keyword, a static import and still get the right type
     @SuppressWarnings("unused")
     public static <T> DefaultObservableList<T> observableList(Class<T> type) {
         return observableList();
@@ -49,5 +49,19 @@ public final class ModelFactory {
 
     public static <T> ComputedValue<T> computedValue(SerializableSupplier<T> valueSupplier, Collection<Observable<?>> dependencies) {
         return new ComputedValue<>(valueSupplier, dependencies);
+    }
+
+    public static <T> DefaultVetoableObservableValue<T> vetoableValue() {
+        return new DefaultVetoableObservableValue<>();
+    }
+
+    public static <T> DefaultVetoableObservableValue<T> vetoableValue(T initialValue) {
+        return new DefaultVetoableObservableValue<>(initialValue);
+    }
+
+    // To make it possible to use with the var keyword, a static import and still get the right type
+    @SuppressWarnings("unused")
+    public static <T> DefaultVetoableObservableValue<T> vetoableValue(Class<T> type) {
+        return vetoableValue();
     }
 }
