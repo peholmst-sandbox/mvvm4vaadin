@@ -54,8 +54,7 @@ public class DefaultObservableList<T> extends AbstractObservableList<T> implemen
     public void move(int index, int newPosition) {
         if (index != newPosition) {
             var item = items.remove(index);
-            var offsetNewPosition = newPosition > index ? newPosition - 1 : newPosition;
-            items.add(offsetNewPosition, item);
+            items.add(newPosition, item);
             fireEvent(ItemChangeEvent.itemMoved(this, item, index, newPosition));
         }
     }

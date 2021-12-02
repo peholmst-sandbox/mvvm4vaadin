@@ -226,6 +226,8 @@ public class BindingFactoryTest {
         assertSameContent(model, view);
         model.move(2, 0);
         assertSameContent(model, view);
+        model.move(0, 2);
+        assertSameContent(model, view);
         model.remove(0);
         assertSameContent(model, view);
 

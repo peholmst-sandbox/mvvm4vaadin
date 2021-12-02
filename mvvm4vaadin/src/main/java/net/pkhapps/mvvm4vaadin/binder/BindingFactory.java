@@ -204,8 +204,7 @@ public final class BindingFactory {
             } else if (event.isItemMoved()) {
                 var component = view.getComponentAt(event.getOldPosition());
                 view.remove(component);
-                var newIndex = event.getNewPosition() > event.getOldPosition() ? event.getNewPosition() - 1 : event.getNewPosition();
-                view.addComponentAtIndex(newIndex, component);
+                view.addComponentAtIndex(event.getNewPosition(), component);
             } else if (event.isListChanged()) {
                 view.removeAll();
                 event.getSender().forEach(view::add);

@@ -81,8 +81,7 @@ public abstract class AbstractObservableList<T> extends AbstractObservable<Obser
                 fireEvent(ItemChangeEvent.itemRemoved(this, oldItem, event.getOldPosition()));
             } else if (event.isItemMoved()) {
                 var item = mappedItems.remove(event.getOldPosition());
-                var offsetNewPosition = event.getNewPosition() > event.getOldPosition() ? event.getNewPosition() - 1 : event.getNewPosition();
-                mappedItems.add(offsetNewPosition, item);
+                mappedItems.add(event.getNewPosition(), item);
                 fireEvent(ItemChangeEvent.itemMoved(this, item, event.getOldPosition(), event.getNewPosition()));
             } else {
                 mappedItems.clear();
