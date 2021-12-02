@@ -8,8 +8,9 @@ public abstract class AbstractComputedValue<T> extends AbstractObservableValue<T
 
     protected void updateCachedValue() {
         var old = cachedValue;
-        cachedValue = computeValue();
-        if (!Objects.equals(old, cachedValue)) {
+        var newValue = computeValue();
+        if (!Objects.equals(old, newValue)) {
+            this.cachedValue = newValue;
             fireValueChangeEvent(old, cachedValue);
         }
     }
