@@ -1,39 +1,27 @@
 package net.pkhapps.mvvm4vaadin.model.support;
 
-import com.vaadin.flow.function.SerializableFunction;
-
-import java.util.Objects;
-
 public final class MappingFunctions {
 
     private MappingFunctions() {
     }
 
-    public static SerializableFunction<Boolean, Boolean> invert() {
-        return v -> v == null ? null : !v;
+    public static Boolean invert(Boolean v) {
+        return v == null ? null : !v;
     }
 
-    public static SerializableFunction<?, Boolean> isNull() {
-        return Objects::isNull;
+    public static boolean isEmptyString(String s) {
+        return s == null || s.isEmpty();
     }
 
-    public static SerializableFunction<?, Boolean> isNonNull() {
-        return Objects::nonNull;
+    public static boolean isNonEmptyString(String s) {
+        return s != null && !s.isEmpty();
     }
 
-    public static SerializableFunction<String, Boolean> isEmptyString() {
-        return s -> s == null || s.isEmpty();
+    public static boolean isBlankString(String s) {
+        return s == null || s.isBlank();
     }
 
-    public static SerializableFunction<String, Boolean> isNonEmptyString() {
-        return s -> s != null && !s.isEmpty();
-    }
-
-    public static SerializableFunction<String, Boolean> isBlankString() {
-        return s -> s == null || s.isBlank();
-    }
-
-    public static SerializableFunction<String, Boolean> isNonBlankString() {
-        return s -> s != null && !s.isBlank();
+    public static boolean isNonBlankString(String s) {
+        return s != null && !s.isBlank();
     }
 }
