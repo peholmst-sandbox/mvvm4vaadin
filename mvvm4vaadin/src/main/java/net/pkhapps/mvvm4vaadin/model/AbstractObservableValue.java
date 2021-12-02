@@ -46,8 +46,8 @@ public abstract class AbstractObservableValue<T> extends AbstractObservable<Obse
         private final SerializableConsumer<ValueChangeEvent<T>> sourceValueListener = this::onSourceValueChangeEvent;
 
         private MappedObservableValue(ObservableValue<T> source, SerializableFunction<T, E> mappingFunction) {
-            this.source = source;
-            this.mappingFunction = requireNonNull(mappingFunction);
+            this.source = requireNonNull(source, "source must not be null");
+            this.mappingFunction = requireNonNull(mappingFunction, "mappingFunction must not be null");
             source.addWeakListener(sourceValueListener);
         }
 

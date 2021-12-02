@@ -15,7 +15,6 @@ public abstract class AbstractObservableList<T> extends AbstractObservable<Obser
     private final DefaultObservableValue<Integer> size = new DefaultObservableValue<>(0);
 
     protected AbstractObservableList() {
-        addListener(event -> updateObservableValues());
     }
 
     protected void updateObservableValues() {
@@ -65,8 +64,8 @@ public abstract class AbstractObservableList<T> extends AbstractObservable<Obser
         private final List<E> mappedItems = new ArrayList<>();
 
         private MappedObservableList(ObservableList<T> source, SerializableFunction<T, E> mappingFunction) {
-            this.source = source;
-            this.mappingFunction = requireNonNull(mappingFunction);
+            this.source = requireNonNull(source, "source must not be null");
+            this.mappingFunction = requireNonNull(mappingFunction, "mappingFunction must not be null");
             source.addWeakListener(sourceItemListener, true);
         }
 
@@ -74,9 +73,11 @@ public abstract class AbstractObservableList<T> extends AbstractObservable<Obser
             if (event.isItemAdded()) {
                 var newItem = mappingFunction.apply(event.getItem());
                 mappedItems.add(event.getNewPosition(), newItem);
+                updateObservableValues();
                 fireEvent(ItemChangeEvent.itemAdded(this, newItem, event.getNewPosition()));
             } else if (event.isItemRemoved()) {
                 var oldItem = mappedItems.remove(event.getOldPosition());
+                updateObservableValues();
                 fireEvent(ItemChangeEvent.itemRemoved(this, oldItem, event.getOldPosition()));
             } else if (event.isItemMoved()) {
                 var item = mappedItems.remove(event.getOldPosition());
@@ -86,6 +87,7 @@ public abstract class AbstractObservableList<T> extends AbstractObservable<Obser
             } else {
                 mappedItems.clear();
                 source.stream().map(mappingFunction).forEach(mappedItems::add);
+                updateObservableValues();
                 fireEvent(ItemChangeEvent.listChanged(this));
             }
         }

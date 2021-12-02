@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import static java.util.Objects.requireNonNull;
+
 class ListenerCollection<EVENT> implements Serializable {
 
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
@@ -21,6 +23,7 @@ class ListenerCollection<EVENT> implements Serializable {
     }
 
     void fireEvent(EVENT event) {
+        requireNonNull(event, "event must not be null");
         Set<SerializableConsumer<? super EVENT>> listeners = new HashSet<>();
         if (strongListeners != null) {
             listeners.addAll(strongListeners);
@@ -32,6 +35,7 @@ class ListenerCollection<EVENT> implements Serializable {
     }
 
     Registration addListener(SerializableConsumer<? super EVENT> listener) {
+        requireNonNull(listener, "listener must not be null");
         if (strongListeners == null) {
             strongListeners = new HashSet<>();
         }
@@ -40,6 +44,7 @@ class ListenerCollection<EVENT> implements Serializable {
     }
 
     void addWeakListener(SerializableConsumer<? super EVENT> listener) {
+        requireNonNull(listener, "listener must not be null");
         if (weakListeners == null) {
             weakListeners = new WeakHashMap<>();
         }

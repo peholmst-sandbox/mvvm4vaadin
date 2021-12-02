@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static java.util.Objects.requireNonNull;
+
 public class DefaultObservableList<T> extends AbstractObservableList<T> implements WritableObservableList<T> {
 
     private final List<T> items = new ArrayList<>();
@@ -14,6 +16,7 @@ public class DefaultObservableList<T> extends AbstractObservableList<T> implemen
     }
 
     public DefaultObservableList(Collection<T> initialItems) {
+        this();
         if (initialItems != null) {
             addAll(initialItems);
         }
@@ -27,12 +30,15 @@ public class DefaultObservableList<T> extends AbstractObservableList<T> implemen
     @Override
     public void add(int index, T item) {
         items.add(index, item);
+        updateObservableValues();
         fireEvent(ItemChangeEvent.itemAdded(this, item, index));
     }
 
     @Override
     public void addAll(Collection<T> items) {
+        requireNonNull(items, "items must not be null");
         if (this.items.addAll(items)) {
+            updateObservableValues();
             fireEvent(ItemChangeEvent.listChanged(this));
         }
     }
@@ -40,6 +46,7 @@ public class DefaultObservableList<T> extends AbstractObservableList<T> implemen
     @Override
     public void remove(int index) {
         var removedItem = items.remove(index);
+        updateObservableValues();
         fireEvent(ItemChangeEvent.itemRemoved(this, removedItem, index));
     }
 
@@ -56,13 +63,16 @@ public class DefaultObservableList<T> extends AbstractObservableList<T> implemen
     @Override
     public void clear() {
         items.clear();
+        updateObservableValues();
         fireEvent(ItemChangeEvent.listChanged(this));
     }
 
     @Override
     public void setItems(Collection<T> items) {
+        requireNonNull(items, "items must not be null");
         this.items.clear();
         this.items.addAll(items);
+        updateObservableValues();
         fireEvent(ItemChangeEvent.listChanged(this));
     }
 }
