@@ -23,16 +23,20 @@
     <groupId>net.pkhapps.mvvm4vaadin</groupId>
     <artifactId>mvvm4vaadin-master</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>MVVM4Vaadin Master POM</name>
+
     <modules>
         <module>mvvm4vaadin-demo</module>
         <module>mvvm4vaadin</module>
     </modules>
-    <packaging>pom</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <vaadin.version>22.0.0</vaadin.version>
+        <junit.version>5.8.1</junit.version>
     </properties>
 
     <licenses>
@@ -54,14 +58,14 @@
             <dependency>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-bom</artifactId>
-                <version>22.0.0</version>
+                <version>${vaadin.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
-                <version>5.8.1</version>
+                <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

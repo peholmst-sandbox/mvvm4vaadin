@@ -26,6 +26,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>mvvm4vaadin-demo</artifactId>
+    <name>MVVM4Vaadin Demo Application</name>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
