@@ -1,0 +1,18 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="DemoApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <module name="mvvm4vaadin-demo" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="net.pkhapps.mvvm4vaadin.demo.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <option name="SPRING_BOOT_MAIN_CLASS" value="net.pkhapps.mvvm4vaadin.demo.DemoApplication" />
+    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/mvvm4vaadin-demo" />
+    <option name="ALTERNATIVE_JRE_PATH" />
+    <option name="SHORTEN_COMMAND_LINE" value="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
