@@ -147,10 +147,14 @@ public final class BindingFactory {
     }
 
     public static <V extends HasValue<?, T>, T> Registration bindFieldValue(ObservableValue<T> model, V view) {
+        return bindFieldValue(model, view, null);
+    }
+
+    public static <V extends HasValue<?, T>, T> Registration bindFieldValue(ObservableValue<T> model, V view, T emptyValue) {
         requireNonNull(model, "model must not be null");
         requireNonNull(view, "view must not be null");
         return decorateWithRemoveAction(model.addListener(event -> {
-            if (event.getValue() == null) {
+            if (Objects.equals(emptyValue, event.getValue())) {
                 view.clear();
             } else if (!Objects.equals(event.getValue(), view.getValue())) {
                 view.setValue(event.getValue());
@@ -160,6 +164,10 @@ public final class BindingFactory {
 
     public static <V extends Component & HasValue<?, T>, T> void bindFieldValueOnAttach(ObservableValue<T> model, V view) {
         bindOnAttach(model, view, BindingFactory::bindFieldValue);
+    }
+
+    public static <V extends Component & HasValue<?, T>, T> void bindFieldValueOnAttach(ObservableValue<T> model, V view, T emptyValue) {
+        bindOnAttach(model, view, (m, v) -> bindFieldValue(m, v, emptyValue));
     }
 
     public static <V extends HasValue<?, T>, T> Registration reverseBindFieldValue(V view, SerializableConsumer<T> model) {
@@ -316,7 +324,7 @@ public final class BindingFactory {
         requireNonNull(action, "action must not be null");
         requireNonNull(view, "view must not be null");
         return view.addClickListener(event -> {
-            if (event.isFromClient()) {
+            if (event.isFromClient() && event.getSource().isAttached()) {
                 action.run();
             }
         });
@@ -336,6 +344,9 @@ public final class BindingFactory {
         var key = "binding" + nextBindingId.incrementAndGet();
         view.addAttachListener(attachEvent -> setRegistration(view, registrationSupplier.get(), key));
         view.addDetachListener(detachEvent -> getRegistration(view, key).ifPresent(Registration::remove));
+        if (view.isAttached()) {
+            setRegistration(view, registrationSupplier.get(), key);
+        }
     }
 
     private static void setRegistration(Component component, Registration registration, String key) {
