@@ -170,4 +170,70 @@ public class DefaultObservableValueTest {
         value.setValue(0);
         assertSame(originalMappedValue, mapped.getValue());
     }
+
+    @Test
+    void getValueOrDefault_null_defaultValueReturned() {
+        var value = new DefaultObservableValue<String>();
+        assertEquals("hello", value.getValueOrDefault("hello"));
+    }
+
+    @Test
+    void getValueOrDefault_nonNull_realValueReturned() {
+        var value = new DefaultObservableValue<>("world");
+        assertEquals("world", value.getValueOrDefault("hello"));
+    }
+
+    @Test
+    void convertValue_null_handledByConverter() {
+        var value = new DefaultObservableValue<Integer>();
+        assertEquals("null", value.convertValue(String::valueOf));
+    }
+
+    @Test
+    void convertValue_nonNull_handledByConverter() {
+        var value = new DefaultObservableValue<>(123);
+        assertEquals("123", value.convertValue(String::valueOf));
+    }
+
+    @Test
+    void convertValueOrDefault_null_defaultValueReturned() {
+        var value = new DefaultObservableValue<Integer>();
+        assertEquals("hello", value.convertValueOrDefault(String::valueOf, "hello"));
+    }
+
+    @Test
+    void convertValueOrDefault_nonNull_handledByConverter() {
+        var value = new DefaultObservableValue<>(123);
+        assertEquals("123", value.convertValueOrDefault(String::valueOf, "hello"));
+    }
+
+    @Test
+    void isEqualTo_nullValue() {
+        var value = new DefaultObservableValue<Integer>();
+        assertTrue(value.isEqualTo((Integer) null));
+        assertFalse(value.isEqualTo(123));
+    }
+
+    @Test
+    void isEqualTo_nonNullValue() {
+        var value = new DefaultObservableValue<>(123);
+        assertTrue(value.isEqualTo(123));
+        assertFalse(value.isEqualTo((Integer) null));
+    }
+
+    @Test
+    void isEqualTo_observableValue() {
+        var v1 = new DefaultObservableValue<Integer>();
+        var v2 = new DefaultObservableValue<Integer>();
+        assertTrue(v1.isEqualTo(v2));
+        assertTrue(v2.isEqualTo(v1));
+
+        v1.setValue(123);
+        assertFalse(v1.isEqualTo(v2));
+        assertFalse(v2.isEqualTo(v1));
+
+        v2.setValue(123);
+        assertTrue(v1.isEqualTo(v2));
+        assertTrue(v2.isEqualTo(v1));
+    }
 }

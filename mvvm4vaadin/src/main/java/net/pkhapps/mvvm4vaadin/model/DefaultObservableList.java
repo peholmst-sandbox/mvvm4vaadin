@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static java.util.Objects.requireNonNull;
 
@@ -64,6 +65,19 @@ public class DefaultObservableList<T> extends AbstractObservableList<T> implemen
         var removedItem = items.remove(index);
         updateObservableValues();
         fireEvent(ItemChangeEvent.itemRemoved(this, removedItem, index));
+    }
+
+    @Override
+    public void removeIf(Predicate<T> predicate) {
+        requireNonNull(predicate, "predicate must not be null");
+        for (int i = items.size() - 1; i >= 0; --i) {
+            var item = items.get(i);
+            if (predicate.test(item)) {
+                items.remove(i);
+                updateObservableValues();
+                fireEvent(ItemChangeEvent.itemRemoved(this, item, i));
+            }
+        }
     }
 
     @Override

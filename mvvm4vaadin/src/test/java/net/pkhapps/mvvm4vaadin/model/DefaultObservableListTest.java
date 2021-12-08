@@ -18,6 +18,7 @@ package net.pkhapps.mvvm4vaadin.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -106,6 +107,26 @@ public class DefaultObservableListTest {
         assertTrue(lastEvent.get().isItemRemoved());
         assertEquals("awesome", lastEvent.get().getItem());
         assertEquals(1, lastEvent.get().getOldPosition());
+    }
+
+    @Test
+    void removeIf() {
+        var list = new DefaultObservableList<>(List.of("an item", "another item", "third", "fourth", "a fifth"));
+        var events = new ArrayList<ObservableList.ItemChangeEvent<String>>();
+        list.addListener(events::add, false);
+        list.removeIf(s -> s.startsWith("a"));
+
+        assertEquals(2, list.getSize());
+        assertEquals(2, list.size().getValue());
+        assertFalse(list.isEmpty());
+        assertFalse(list.empty().getValue());
+        assertEquals(List.of("third", "fourth"), list.getItems());
+
+        assertEquals(3, events.size());
+        assertEquals("a fifth", events.get(0).getItem());
+        assertEquals("another item", events.get(1).getItem());
+        assertEquals("an item", events.get(2).getItem());
+        assertTrue(events.stream().allMatch(ObservableList.ItemChangeEvent::isItemRemoved));
     }
 
     @Test

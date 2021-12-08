@@ -17,6 +17,9 @@
 package net.pkhapps.mvvm4vaadin.model;
 
 import java.util.Collection;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public interface WritableObservableList<T> extends ObservableList<T> {
 
@@ -28,6 +31,10 @@ public interface WritableObservableList<T> extends ObservableList<T> {
 
     void addAll(Collection<T> items);
 
+    default void addAll(Stream<T> items) {
+        addAll(items.collect(Collectors.toList()));
+    }
+
     default void remove(T item) {
         var index = indexOf(item);
         if (index != -1) {
@@ -36,6 +43,8 @@ public interface WritableObservableList<T> extends ObservableList<T> {
     }
 
     void remove(int index);
+
+    void removeIf(Predicate<T> predicate);
 
     default void move(T item, int newPosition) {
         move(indexOf(item), newPosition);
@@ -46,4 +55,8 @@ public interface WritableObservableList<T> extends ObservableList<T> {
     void clear();
 
     void setItems(Collection<T> items);
+
+    default void setItems(Stream<T> items) {
+        setItems(items.collect(Collectors.toList()));
+    }
 }

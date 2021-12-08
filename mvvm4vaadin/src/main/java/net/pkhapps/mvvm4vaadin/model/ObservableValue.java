@@ -20,12 +20,37 @@ import com.vaadin.flow.function.SerializableFunction;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 
 public interface ObservableValue<T> extends Observable<ObservableValue.ValueChangeEvent<T>> {
 
     T getValue();
+
+    default Optional<T> optional() {
+        return Optional.ofNullable(getValue());
+    }
+
+    default T getValueOrDefault(T defaultValue) {
+        return optional().orElse(defaultValue);
+    }
+
+    default <E> E convertValue(SerializableFunction<T, E> converter) {
+        return converter.apply(getValue());
+    }
+
+    default <E> E convertValueOrDefault(SerializableFunction<T, E> converter, E defaultValue) {
+        return optional().map(converter).orElse(defaultValue);
+    }
+
+    default boolean isEqualTo(T value) {
+        return Objects.equals(getValue(), value);
+    }
+
+    default boolean isEqualTo(ObservableValue<T> observableValue) {
+        return isEqualTo(observableValue.getValue());
+    }
 
     <E> ObservableValue<E> map(SerializableFunction<T, E> mappingFunction);
 
