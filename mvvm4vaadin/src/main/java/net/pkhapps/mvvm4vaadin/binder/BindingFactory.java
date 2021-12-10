@@ -37,7 +37,12 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import static java.util.Objects.requireNonNull;
 
+@SuppressWarnings("Convert2MethodRef")
+// At least on Windows, using method references sometimes results in LambdaConversionExceptions inside all the
+// *onAttach methods, whereas it works on macOS. Don't know why, but using lambdas instead seems to do the trick.
 public final class BindingFactory {
+
+    private static final AtomicLong nextBindingId = new AtomicLong(System.currentTimeMillis());
 
     private BindingFactory() {
     }
@@ -53,7 +58,7 @@ public final class BindingFactory {
     }
 
     public static <V extends Component & HasEnabled> void bindEnabledOnAttach(ObservableValue<Boolean> model, V view) {
-        bindOnAttach(model, view, BindingFactory::bindEnabled);
+        bindOnAttach(model, view, (m, v) -> bindEnabled(m, v));
     }
 
     public static Registration bindVisible(ObservableValue<Boolean> model, Component view) {
@@ -67,7 +72,7 @@ public final class BindingFactory {
     }
 
     public static void bindVisibleOnAttach(ObservableValue<Boolean> model, Component view) {
-        bindOnAttach(model, view, BindingFactory::bindVisible);
+        bindOnAttach(model, view, (m, v) -> bindVisible(m, v));
     }
 
     public static <V extends HasText> Registration bindText(ObservableValue<String> model, V view) {
@@ -81,7 +86,7 @@ public final class BindingFactory {
     }
 
     public static <V extends Component & HasText> void bindTextOnAttach(ObservableValue<String> model, V view) {
-        bindOnAttach(model, view, BindingFactory::bindText);
+        bindOnAttach(model, view, (m, v) -> bindText(m, v));
     }
 
     public static <V extends HasTheme> Registration bindTheme(ObservableValue<String> model, V view) {
@@ -98,7 +103,7 @@ public final class BindingFactory {
     }
 
     public static <V extends Component & HasTheme> void bindThemeOnAttach(ObservableValue<String> model, V view) {
-        bindOnAttach(model, view, BindingFactory::bindTheme);
+        bindOnAttach(model, view, (m, v) -> bindTheme(m, v));
     }
 
     public static <V extends HasStyle> Registration bindClassName(ObservableValue<String> model, V view) {
@@ -115,7 +120,7 @@ public final class BindingFactory {
     }
 
     public static <V extends Component & HasStyle> void bindClassNameOnAttach(ObservableValue<String> model, V view) {
-        bindOnAttach(model, view, BindingFactory::bindClassName);
+        bindOnAttach(model, view, (m, v) -> bindClassName(m, v));
     }
 
     public static <V extends HasValidation> Registration bindErrorMessage(ObservableValue<String> model, V view) {
@@ -129,7 +134,7 @@ public final class BindingFactory {
     }
 
     public static <V extends Component & HasValidation> void bindErrorMessageOnAttach(ObservableValue<String> model, V view) {
-        bindOnAttach(model, view, BindingFactory::bindErrorMessage);
+        bindOnAttach(model, view, (m, v) -> bindErrorMessage(m, v));
     }
 
     public static <V extends HasValidation> Registration bindInvalid(ObservableValue<Boolean> model, V view) {
@@ -143,7 +148,7 @@ public final class BindingFactory {
     }
 
     public static <V extends Component & HasValidation> void bindInvalidOnAttach(ObservableValue<Boolean> model, V view) {
-        bindOnAttach(model, view, BindingFactory::bindInvalid);
+        bindOnAttach(model, view, (m, v) -> bindInvalid(m, v));
     }
 
     public static <V extends HasValue<?, T>, T> Registration bindFieldValue(ObservableValue<T> model, V view) {
@@ -163,7 +168,7 @@ public final class BindingFactory {
     }
 
     public static <V extends Component & HasValue<?, T>, T> void bindFieldValueOnAttach(ObservableValue<T> model, V view) {
-        bindOnAttach(model, view, BindingFactory::bindFieldValue);
+        bindOnAttach(model, view, (m, v) -> bindFieldValue(m, v));
     }
 
     public static <V extends Component & HasValue<?, T>, T> void bindFieldValueOnAttach(ObservableValue<T> model, V view, T emptyValue) {
@@ -203,7 +208,7 @@ public final class BindingFactory {
     }
 
     public static <V extends Component & HasValue<?, ?>> void bindReadOnlyOnAttach(ObservableValue<Boolean> model, V view) {
-        bindOnAttach(model, view, BindingFactory::bindReadOnly);
+        bindOnAttach(model, view, (m, v) -> bindReadOnly(m, v));
     }
 
     public static <V extends HasValue<?, ?>> Registration bindRequired(ObservableValue<Boolean> model, V view) {
@@ -217,7 +222,7 @@ public final class BindingFactory {
     }
 
     public static <V extends Component & HasValue<?, ?>> void bindRequiredOnAttach(ObservableValue<Boolean> model, V view) {
-        bindOnAttach(model, view, BindingFactory::bindRequired);
+        bindOnAttach(model, view, (m, v) -> bindRequired(m, v));
     }
 
     public static <V extends HasListDataView<T, ?>, T> Registration bindListDataProvider(ObservableList<T> model, V view) {
@@ -238,7 +243,7 @@ public final class BindingFactory {
     }
 
     public static <V extends Component & HasListDataView<T, ?>, T> void bindListDataProviderOnAttach(ObservableList<T> model, V view) {
-        bindOnAttach(model, view, BindingFactory::bindListDataProvider);
+        bindOnAttach(model, view, (m, v) -> bindListDataProvider(m, v));
     }
 
     public static <V extends HasOrderedComponents, T extends Component> Registration bindChildren(ObservableList<T> model, V view) {
@@ -262,7 +267,7 @@ public final class BindingFactory {
     }
 
     public static <V extends Component & HasOrderedComponents, T extends Component> void bindChildrenOnAttach(ObservableList<T> model, V view) {
-        bindOnAttach(model, view, BindingFactory::bindChildren);
+        bindOnAttach(model, view, (m, v) -> bindChildren(m, v));
     }
 
     public static <V extends HasComponents, T extends Component> Registration bindContent(ObservableValue<T> model, V view) {
@@ -277,7 +282,7 @@ public final class BindingFactory {
     }
 
     public static <V extends Component & HasComponents, T extends Component> void bindContentOnAttach(ObservableValue<T> model, V view) {
-        bindOnAttach(model, view, BindingFactory::bindContent);
+        bindOnAttach(model, view, (m, v) -> bindContent(m, v));
     }
 
     public static <T> Registration bindMethod(ObservableValue<T> model, SerializableConsumer<T> method) {
@@ -300,7 +305,7 @@ public final class BindingFactory {
     }
 
     public static <V extends Component & ClickNotifier<?> & HasEnabled> void bindActionOnAttachAsDisabledWhenUnavailable(Action action, V view) {
-        bindOnAttach(action, view, BindingFactory::bindActionAsDisabledWhenUnavailable);
+        bindOnAttach(action, view, (a, v) -> bindActionAsDisabledWhenUnavailable(a, v));
     }
 
     public static <V extends Component & ClickNotifier<?>> Registration bindActionAsHiddenWhenUnavailable(Action action, V view) {
@@ -317,7 +322,7 @@ public final class BindingFactory {
     }
 
     public static <V extends Component & ClickNotifier<?>> void bindActionOnAttachAsHiddenWhenUnavailable(Action action, V view) {
-        bindOnAttach(action, view, BindingFactory::bindActionAsHiddenWhenUnavailable);
+        bindOnAttach(action, view, (a, v) -> bindActionAsHiddenWhenUnavailable(a, v));
     }
 
     public static <V extends ClickNotifier<?>> Registration bindActionMethod(SerializableRunnable action, V view) {
@@ -331,14 +336,12 @@ public final class BindingFactory {
     }
 
     public static <V extends Component & ClickNotifier<?>> void bindActionMethodOnAttach(SerializableRunnable action, V view) {
-        bindOnAttach(action, view, BindingFactory::bindActionMethod);
+        bindOnAttach(action, view, (a, v) -> bindActionMethod(a, v));
     }
 
     private static <V extends Component, M> void bindOnAttach(M model, V view, SerializableBiFunction<M, V, Registration> bindingMethod) {
         bindOnAttach(view, () -> bindingMethod.apply(model, view));
     }
-
-    private static final AtomicLong nextBindingId = new AtomicLong(System.currentTimeMillis());
 
     private static <V extends Component> void bindOnAttach(V view, SerializableSupplier<Registration> registrationSupplier) {
         var key = "binding" + nextBindingId.incrementAndGet();

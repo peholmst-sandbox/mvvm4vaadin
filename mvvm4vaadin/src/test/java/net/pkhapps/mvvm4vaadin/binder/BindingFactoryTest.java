@@ -230,7 +230,7 @@ public class BindingFactoryTest {
     }
 
     @Test
-    void testBindChildren() {
+    void testBindChildrenOnAttach() {
         var model = observableList(new Span("hello"), new Span("world"));
         var view = new Div();
         bindChildrenOnAttach(model, view);
