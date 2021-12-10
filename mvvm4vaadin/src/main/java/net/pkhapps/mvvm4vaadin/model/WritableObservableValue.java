@@ -16,7 +16,20 @@
 
 package net.pkhapps.mvvm4vaadin.model;
 
+/**
+ * An extended version of {@link ObservableValue} that allows clients to also set the value and not only observe it.
+ *
+ * @param <T> the type of the value contained inside the observable value.
+ * @see WritableObservableList
+ */
 public interface WritableObservableValue<T> extends ObservableValue<T> {
 
+    /**
+     * Sets the value of this observable value, notifying all observers of the change. If the value is equal to the
+     * {@linkplain #getValue() current value}, implementations may choose to either do nothing or notify the observers
+     * anyway.
+     *
+     * @param value the value to set, may be {@code null} unless explicitly denied by the implementation.
+     */
     void setValue(T value);
 }
