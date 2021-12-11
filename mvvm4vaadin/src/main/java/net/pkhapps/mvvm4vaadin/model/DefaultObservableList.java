@@ -16,10 +16,9 @@
 
 package net.pkhapps.mvvm4vaadin.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import com.vaadin.flow.function.SerializablePredicate;
+
+import java.util.*;
 import java.util.function.Predicate;
 
 import static java.util.Objects.requireNonNull;
@@ -42,6 +41,25 @@ public class DefaultObservableList<T> extends AbstractObservableList<T> implemen
     @Override
     public List<T> getItems() {
         return readOnlyView;
+    }
+
+    @Override
+    public void setItems(Collection<T> items) {
+        requireNonNull(items, "items must not be null");
+        this.items.clear();
+        this.items.addAll(items);
+        updateObservableValues();
+        fireEvent(ItemChangeEvent.listChanged(this));
+    }
+
+    @Override
+    public ObservableList<T> filter(SerializablePredicate<T> predicate) {
+        throw new UnsupportedOperationException("Not implemented yet"); // TODO Implement me
+    }
+
+    @Override
+    public ObservableList<T> sorted(Comparator<T> comparator) {
+        throw new UnsupportedOperationException("Not implemented yet"); // TODO Implement me
     }
 
     @Override
@@ -92,15 +110,6 @@ public class DefaultObservableList<T> extends AbstractObservableList<T> implemen
     @Override
     public void clear() {
         items.clear();
-        updateObservableValues();
-        fireEvent(ItemChangeEvent.listChanged(this));
-    }
-
-    @Override
-    public void setItems(Collection<T> items) {
-        requireNonNull(items, "items must not be null");
-        this.items.clear();
-        this.items.addAll(items);
         updateObservableValues();
         fireEvent(ItemChangeEvent.listChanged(this));
     }
