@@ -20,7 +20,7 @@ import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.shared.Registration;
 
 /**
- * Base class for implementation of {@link Observable}. This class is not thread safe.
+ * Base class for implementations of {@link Observable}. This class is not thread safe.
  *
  * @param <EVENT> the type of event fired by the observable object.
  */

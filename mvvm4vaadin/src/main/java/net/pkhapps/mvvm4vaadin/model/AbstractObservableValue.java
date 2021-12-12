@@ -21,7 +21,13 @@ import com.vaadin.flow.function.SerializableFunction;
 
 import static java.util.Objects.requireNonNull;
 
-public abstract class AbstractObservableValue<T> extends AbstractObservable<ObservableValue.ValueChangeEvent<T>> implements ObservableValue<T> {
+/**
+ * Base class for implementations of {@link ObservableValue}. This class is not thread safe.
+ *
+ * @param <T> the type of the value contained inside the observable value.
+ */
+public abstract class AbstractObservableValue<T> extends AbstractObservable<ObservableValue.ValueChangeEvent<T>>
+        implements ObservableValue<T> {
 
     @Override
     protected void fireInitialEvent(SerializableConsumer<? super ValueChangeEvent<T>> listener) {
@@ -29,6 +35,12 @@ public abstract class AbstractObservableValue<T> extends AbstractObservable<Obse
         listener.accept(new ValueChangeEvent<>(this, value, value));
     }
 
+    /**
+     * Fires a {@link net.pkhapps.mvvm4vaadin.model.ObservableValue.ValueChangeEvent} to all registered listeners.
+     *
+     * @param old   the old value, may be {@code null}.
+     * @param value the new value, may be {@code null}.
+     */
     protected void fireValueChangeEvent(T old, T value) {
         fireEvent(new ValueChangeEvent<>(this, old, value));
     }
