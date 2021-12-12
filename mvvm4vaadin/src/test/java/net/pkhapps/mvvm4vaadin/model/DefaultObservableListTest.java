@@ -27,6 +27,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class DefaultObservableListTest {
 
+    // TODO Test IndexOutOfBoundsExceptions
+
     @Test
     void create_empty() {
         var list = new DefaultObservableList<String>();

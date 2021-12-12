@@ -16,9 +16,10 @@
 
 package net.pkhapps.mvvm4vaadin.model;
 
-import com.vaadin.flow.function.SerializablePredicate;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Predicate;
 
 import static java.util.Objects.requireNonNull;
@@ -50,16 +51,6 @@ public class DefaultObservableList<T> extends AbstractObservableList<T> implemen
         this.items.addAll(items);
         updateObservableValues();
         fireEvent(ItemChangeEvent.listChanged(this));
-    }
-
-    @Override
-    public ObservableList<T> filter(SerializablePredicate<T> predicate) {
-        throw new UnsupportedOperationException("Not implemented yet"); // TODO Implement me
-    }
-
-    @Override
-    public ObservableList<T> sorted(Comparator<T> comparator) {
-        throw new UnsupportedOperationException("Not implemented yet"); // TODO Implement me
     }
 
     @Override
