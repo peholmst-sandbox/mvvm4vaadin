@@ -24,14 +24,34 @@ import java.util.function.Predicate;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * Default implementation of both {@link ObservableList} and {@link WritableObservableList}. Models typically never
+ * expose objects of this class directly to the outside world. Rather, they expose them through any of the
+ * aforementioned interfaces depending on whether they want clients to be able to write directly to the observcable list
+ * or not. This class is not thread safe.
+ *
+ * @param <T> the type of items contained inside the observable list.
+ * @see ModelFactory#observableList()
+ * @see ModelFactory#observableList(Class)
+ * @see ModelFactory#observableList(Object[])
+ * @see ModelFactory#observableList(Collection)
+ */
 public class DefaultObservableList<T> extends AbstractObservableList<T> implements WritableObservableList<T> {
 
     private final List<T> items = new ArrayList<>();
     private final List<T> readOnlyView = Collections.unmodifiableList(items);
 
+    /**
+     * Creates a new, empty {@code DefaultObservableList}.
+     */
     public DefaultObservableList() {
     }
 
+    /**
+     * Creates a new {@code DefaultObservableList} with the given {@code initialItems}.
+     *
+     * @param initialItems the initial items to add to the list, may be {@code null} or empty.
+     */
     public DefaultObservableList(Collection<T> initialItems) {
         this();
         if (initialItems != null) {

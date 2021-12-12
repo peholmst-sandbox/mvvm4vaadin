@@ -21,19 +21,27 @@ import com.vaadin.flow.function.SerializableFunction;
 import com.vaadin.flow.function.SerializablePredicate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * Base class for implementations of {@link ObservableList}. Subclasses should pay special attention to the {@link
+ * #updateObservableValues()} method. This class is not thread safe.
+ *
+ * @param <T> the type of items contained inside the observable list.
+ */
 public abstract class AbstractObservableList<T> extends AbstractObservable<ObservableList.ItemChangeEvent<T>> implements ObservableList<T> {
 
     private final DefaultObservableValue<Boolean> empty = new DefaultObservableValue<>(true);
     private final DefaultObservableValue<Integer> size = new DefaultObservableValue<>(0);
 
-    protected AbstractObservableList() {
-    }
-
+    /**
+     * Updates the {@link #empty()} and {@link #size()} observable values with the latest data from the {@link
+     * #getItems() items} list. Subclasses must call this method whenever items are added to or removed from the list.
+     */
     protected void updateObservableValues() {
         var items = getItems();
         empty.setValue(items.isEmpty());
@@ -75,6 +83,7 @@ public abstract class AbstractObservableList<T> extends AbstractObservable<Obser
         private final ObservableList<T> source;
         private final SerializableFunction<T, E> mappingFunction;
         private final List<E> mappedItems = new ArrayList<>();
+        private final List<E> readOnlyView = Collections.unmodifiableList(mappedItems);
         @SuppressWarnings("FieldCanBeLocal") // Needed to prevent premature GC
         private final SerializableConsumer<ItemChangeEvent<T>> sourceItemListener = this::onSourceItemChangeEvent;
 
@@ -108,7 +117,7 @@ public abstract class AbstractObservableList<T> extends AbstractObservable<Obser
 
         @Override
         public List<E> getItems() {
-            return mappedItems;
+            return readOnlyView;
         }
     }
 }

@@ -19,8 +19,8 @@ package net.pkhapps.mvvm4vaadin.model;
 import java.util.Objects;
 
 /**
- * Default implementation of both {@link ObservableValue} and {@link WritableObservableValue}. Implementations typically
- * never expose objects of this class directly to the outside world. Rather, they expose it through any of the
+ * Default implementation of both {@link ObservableValue} and {@link WritableObservableValue}. Models typically never
+ * expose objects of this class directly to the outside world. Rather, they expose them through any of the
  * aforementioned interfaces depending on whether they want clients to be able to write directly to the observable value
  * or not. This class is not thread safe.
  *
