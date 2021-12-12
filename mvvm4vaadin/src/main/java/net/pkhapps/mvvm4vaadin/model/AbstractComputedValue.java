@@ -18,10 +18,23 @@ package net.pkhapps.mvvm4vaadin.model;
 
 import java.util.Objects;
 
+/**
+ * Base class for computed {@link ObservableValue}s. Implementations should pay special attention to the {@link
+ * #updateCachedValue()} method. This class is not thread safe.
+ *
+ * @param <T> the type of the value contained inside the observable value.
+ */
 public abstract class AbstractComputedValue<T> extends AbstractObservableValue<T> {
 
     private T cachedValue;
 
+    /**
+     * Re-computes the value and compares it with the last cached value for equality. If the new value is different from
+     * the old value, the new value is cached and all the observers are notified. If the new value is equal to the old
+     * value, it is discarded, the old value remains cached and no listeners are notified.
+     * <p>
+     * Implementations should remember to call this method in their constructors to initialize the cache.
+     */
     protected void updateCachedValue() {
         var old = cachedValue;
         var newValue = computeValue();
@@ -31,6 +44,12 @@ public abstract class AbstractComputedValue<T> extends AbstractObservableValue<T
         }
     }
 
+    /**
+     * Computes the value that may or may not become the new value of this computed value (see {@link
+     * #updateCachedValue()} for more information).
+     *
+     * @return the computed value, may be {@code null}.
+     */
     protected abstract T computeValue();
 
     @Override
