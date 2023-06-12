@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2023 Petter Holmström
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package net.pkhapps.mvvm4vaadin.demo.ui;
 
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -22,7 +38,8 @@ public class TicketView extends VerticalLayout {
 
         add(new TicketHeader(ticketModel));
 
-        var type = new Select<>(TicketType.values());
+        var type = new Select<TicketType>();
+        type.setItems(TicketType.values());
         type.setLabel("Type");
         type.setWidthFull();
 
@@ -36,7 +53,8 @@ public class TicketView extends VerticalLayout {
         description.setSizeFull();
         description.setValueChangeMode(ValueChangeMode.LAZY);
 
-        var state = new Select<>(TicketState.values());
+        var state = new Select<TicketState>();
+        state.setItems(TicketState.values());
         state.setLabel("State");
         state.setWidthFull();
 
