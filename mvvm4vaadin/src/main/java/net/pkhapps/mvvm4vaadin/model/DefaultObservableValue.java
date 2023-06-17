@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Petter Holmström
+ * Copyright (c) 2021-2023 Petter Holmström
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,11 @@
 
 package net.pkhapps.mvvm4vaadin.model;
 
+import com.vaadin.flow.data.binder.ValueContext;
+import com.vaadin.flow.data.converter.Converter;
+import com.vaadin.flow.function.SerializableSupplier;
+
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -57,8 +62,8 @@ public class DefaultObservableValue<T> extends AbstractObservableValue<T> implem
     /**
      * {@inheritDoc}
      * <p>
-     * In this implementation, nothing will happen if the given {@code value} is equal to the {@linkplain #getValue()
-     * current value}.
+     * In this implementation, nothing will happen if the given {@code value} is equal to the
+     * {@linkplain #getValue() current value}.
      *
      * @throws IllegalStateException if a listener or any other object is trying to call this method while the listeners
      *                               are being notified of a change. This is forbidden to prevent an eternal loop where
@@ -69,6 +74,80 @@ public class DefaultObservableValue<T> extends AbstractObservableValue<T> implem
     public void setValue(T value) {
         if (!Objects.equals(this.value, value)) {
             doSetValue(value);
+        }
+    }
+
+    @Override
+    public <E> ValidatableWritableObservableValue<E> convert(Converter<E, T> converter,
+                                                             SerializableSupplier<Locale> localeSupplier) {
+        return new ConvertedObservableValue<>(this, converter, localeSupplier);
+    }
+
+    private static class ConvertedObservableValue<E, T> extends MappedObservableValue<E, T> implements ValidatableWritableObservableValue<E> {
+
+        private final WritableObservableValue<T> source;
+        private final DefaultObservableValue<Boolean> invalid = new DefaultObservableValue<>(false);
+        private final DefaultObservableValue<String> errorMessage = new DefaultObservableValue<>(null);
+        private final Converter<E, T> converter;
+        private final SerializableSupplier<Locale> localeSupplier;
+
+        private ConvertedObservableValue(WritableObservableValue<T> source, Converter<E, T> converter,
+                                         SerializableSupplier<Locale> localeSupplier) {
+            super(source, v -> converter.convertToPresentation(v, new ValueContext(localeSupplier.get())));
+            this.source = source;
+            this.converter = Objects.requireNonNull(converter, "converter must not be null");
+            this.localeSupplier = Objects.requireNonNull(localeSupplier, "localeSupplier must not be null");
+        }
+
+        @Override
+        public boolean isInvalid() {
+            return invalid.getValue();
+        }
+
+        @Override
+        public ObservableValue<Boolean> invalid() {
+            return invalid;
+        }
+
+        @Override
+        public String getErrorMessage() {
+            return errorMessage.getValue();
+        }
+
+        @Override
+        public ObservableValue<String> errorMessage() {
+            return errorMessage;
+        }
+
+        @Override
+        public void setValue(E value) {
+            converter.convertToModel(value, new ValueContext(localeSupplier.get())).handle(
+                    convertedValue -> {
+                        source.setValue(convertedValue);
+                        errorMessage.setValue(null);
+                        invalid.setValue(false);
+                    },
+                    error -> {
+                        errorMessage.setValue(error);
+                        invalid.setValue(true);
+                    });
+        }
+
+        @Override
+        public <E1> ValidatableWritableObservableValue<E1> convert(Converter<E1, E> converter,
+                                                                   SerializableSupplier<Locale> localeSupplier) {
+            return new ConvertedObservableValue<>(this, converter, localeSupplier);
+        }
+
+        @Override
+        protected void updateCachedValue() {
+            super.updateCachedValue();
+            if (errorMessage != null) {
+                errorMessage.setValue(null);
+            }
+            if (invalid != null) {
+                invalid.setValue(false);
+            }
         }
     }
 

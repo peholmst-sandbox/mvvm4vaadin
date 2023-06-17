@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Petter Holmström
+ * Copyright (c) 2021-2023 Petter Holmström
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@
 
 package net.pkhapps.mvvm4vaadin.model;
 
+import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.function.SerializableConsumer;
 import org.junit.jupiter.api.Test;
 
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -169,6 +171,59 @@ public class DefaultObservableValueTest {
         var originalMappedValue = mapped.getValue();
         value.setValue(0);
         assertSame(originalMappedValue, mapped.getValue());
+    }
+
+    @Test
+    void convert_readingActsAsMap() {
+        var value = new DefaultObservableValue<>(0);
+        var converted = value.convert(new StringToIntegerConverter("error"), Locale::getDefault);
+        assertEquals("0", converted.getValue());
+        value.setValue(1);
+        assertEquals("1", converted.getValue());
+        value.setValue(null);
+        assertNull(converted.getValue());
+    }
+
+    @Test
+    void convert_writingValidValue_propagatedToOriginal() {
+        var value = new DefaultObservableValue<>(0);
+        var converted = value.convert(new StringToIntegerConverter("error"), Locale::getDefault);
+        converted.setValue("123");
+        assertFalse(converted.invalid().getValue());
+        assertNull(converted.errorMessage().getValue());
+        assertEquals(123, value.getValue());
+    }
+
+    @Test
+    void convert_writingInvalidValue_originalRemainsUnchanged() {
+        var value = new DefaultObservableValue<>(0);
+        var converted = value.convert(new StringToIntegerConverter("error"), Locale::getDefault);
+        converted.setValue("not a number");
+        assertTrue(converted.invalid().getValue());
+        assertEquals("error", converted.errorMessage().getValue());
+        assertEquals(0, value.getValue());
+    }
+
+    @Test
+    void convert_writingInvalidValueAndThenValid_propagatedToOriginal() {
+        var value = new DefaultObservableValue<>(0);
+        var converted = value.convert(new StringToIntegerConverter("error"), Locale::getDefault);
+        converted.setValue("not a number");
+        converted.setValue("123");
+        assertFalse(converted.invalid().getValue());
+        assertNull(converted.errorMessage().getValue());
+        assertEquals(123, value.getValue());
+    }
+
+    @Test
+    void convert_writingInvalidValueAndUpdatingOriginal_errorAndInvalidReset() {
+        var value = new DefaultObservableValue<>(0);
+        var converted = value.convert(new StringToIntegerConverter("error"), Locale::getDefault);
+        converted.setValue("not a number");
+        value.setValue(123);
+        assertFalse(converted.invalid().getValue());
+        assertNull(converted.errorMessage().getValue());
+        assertEquals("123", converted.getValue());
     }
 
     @Test

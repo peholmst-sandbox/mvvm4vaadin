@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Petter Holmström
+ * Copyright (c) 2021-2023 Petter Holmström
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,14 +50,14 @@ public abstract class AbstractObservableValue<T> extends AbstractObservable<Obse
         return new MappedObservableValue<>(this, mappingFunction);
     }
 
-    private static class MappedObservableValue<E, T> extends AbstractComputedValue<E> {
+    protected static class MappedObservableValue<E, T> extends AbstractComputedValue<E> {
 
         private final ObservableValue<T> source;
         private final SerializableFunction<T, E> mappingFunction;
         @SuppressWarnings("FieldCanBeLocal") // Needed to prevent premature GC
         private final SerializableConsumer<ValueChangeEvent<T>> sourceValueListener = (event) -> updateCachedValue();
 
-        private MappedObservableValue(ObservableValue<T> source, SerializableFunction<T, E> mappingFunction) {
+        protected MappedObservableValue(ObservableValue<T> source, SerializableFunction<T, E> mappingFunction) {
             this.source = requireNonNull(source, "source must not be null");
             this.mappingFunction = requireNonNull(mappingFunction, "mappingFunction must not be null");
             source.addWeakListener(sourceValueListener);
